@@ -1,7 +1,8 @@
 const { Sequelize } = require("sequelize");
 require("dotenv").config();
 
-const useSSL = false; // ✅ Local မှာ SSL မလိုတော့
+// Automatically enable SSL in production (like Render)
+const useSSL = process.env.NODE_ENV === "production";
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -12,15 +13,14 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || 5432,
     dialect: "postgres",
     logging: false,
-    dialectOptions: {
-      ...(useSSL && {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false,
-        },
-      }),
-      useIPv6: false, // ✅ Prevent Render from using IPv6
-    },
+    dialectOptions: useSSL
+      ? {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        }
+      : {},
     pool: {
       max: 5,
       min: 0,
