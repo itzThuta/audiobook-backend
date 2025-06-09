@@ -12,14 +12,15 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || 5432,
     dialect: "postgres",
     logging: false,
-    dialectOptions: useSSL
-      ? {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-          },
-        }
-      : {}, // ✅ SSL မသုံးတော့
+    dialectOptions: {
+      ...(useSSL && {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      }),
+      useIPv6: false, // ✅ Prevent Render from using IPv6
+    },
     pool: {
       max: 5,
       min: 0,
